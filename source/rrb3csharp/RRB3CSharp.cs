@@ -13,7 +13,8 @@
 
     public class RRB3CSharp
     {
-        public int MOTOR_DELAY = 200;//ms
+        public int MotorDelay = 200;//ms
+
         public int RightPwmPinId = 14;
         public int Right1PinId = 10;
         public int Right2PinId = 25;
@@ -30,12 +31,23 @@
         public int OC2PinIdR2 = 27;
         public int TriggerPinId = 18;
         public int EchoPinId = 23;
+
         public GpioPin LeftPwmPin;
         public GpioPin RightPwmPin;
+
         public float PwmScale = 0f;
 
         public Direction OldLeftDir = Direction.Uninitialized;
         public Direction OldRightDir = Direction.Uninitialized;
+
+        private GpioPin LeftPin1 = null;
+        private GpioPin LeftPin2 = null;
+        private GpioPin RightPin1 = null;
+        private GpioPin RightPin2 = null;
+        private GpioPin LedPin1 = null;
+        private GpioPin LedPin2 = null;
+        private GpioPin TriggerPin = null;
+        private GpioPin EchoPin = null;
 
         public RRB3CSharp()
             : this(9.0f, 6.0f, 2)
@@ -53,11 +65,14 @@
             LeftPwmPin = InitPwmOutputPin(LeftPwmPinId, 500);
             RightPwmPin = InitPwmOutputPin(RightPwmPinId, 500);
 
-            InitPin(Right1PinId, GpioPinDriveMode.Output);
-            InitPin(Right2PinId, GpioPinDriveMode.Output);
-            
-            InitPin(LED1PinId, GpioPinDriveMode.Output);
-            InitPin(LED2PinId, GpioPinDriveMode.Output);
+            LeftPin1 = InitPin(Left1PinId, GpioPinDriveMode.Output);
+            LeftPin2 = InitPin(Left2PinId, GpioPinDriveMode.Output);
+
+            RightPin1 = InitPin(Right1PinId, GpioPinDriveMode.Output);
+            RightPin2 = InitPin(Right2PinId, GpioPinDriveMode.Output);
+
+            LedPin1 = InitPin(LED1PinId, GpioPinDriveMode.Output);
+            LedPin2 = InitPin(LED2PinId, GpioPinDriveMode.Output);
 
             InitPin(OC1PinId, GpioPinDriveMode.Output);
 
@@ -74,8 +89,8 @@
 
             InitPin(Sw1PinId, GpioPinDriveMode.Input);
             InitPin(Sw2PinId, GpioPinDriveMode.Input);
-            InitPin(TriggerPinId, GpioPinDriveMode.Output);
-            InitPin(EchoPinId, GpioPinDriveMode.Input);
+            TriggerPin = InitPin(TriggerPinId, GpioPinDriveMode.Output);
+            EchoPin = InitPin(EchoPinId, GpioPinDriveMode.Input);
         }
 
         public void SetMotors(float leftPwmLevel, Direction left, float rightPwmLevel, Direction right)
@@ -84,7 +99,7 @@
             {
                 SetDriverPins(0, Direction.Forward, 0, Direction.Forward);
                 // stop motors between sudden changes of direction
-                Sleep(MOTOR_DELAY);
+                Sleep(MotorDelay);
             }
 
             SetDriverPins(leftPwmLevel, left, rightPwmLevel, right);
@@ -97,15 +112,15 @@
             int ll = Convert.ToInt32( leftPwmLevel * 100 * PwmScale);
             int rl = Convert.ToInt32(rightPwmLevel * 100 * PwmScale);
 
-            SetPinValue(LeftPwmPinId, ll);
-            SetPinValue(RightPwmPinId, ll);
+            SetPinValue(LeftPwmPin, ll);
+            SetPinValue(RightPwmPin, ll);
 
-            SetPinValue(Left1PinId, (int)leftDirection);
+            SetPinValue(LeftPin1, (int)leftDirection);
             var notDir = leftDirection == Direction.Forward ? Direction.Reverse : Direction.Forward;
-            SetPinValue(Left2PinId, (int)notDir);
+            SetPinValue(LeftPin2, (int)notDir);
             
-            SetPinValue(Right1PinId, (int)rightDirection);
-            SetPinValue(Right2PinId, (int)rightDirection);
+            SetPinValue(RightPin1, (int)rightDirection);
+            SetPinValue(RightPin2, (int)rightDirection);
         }
 
         public void Forward(int seconds = 0, float speed = 1.0f)
@@ -171,15 +186,15 @@
 
         public void SendTriggerPulse()
         {
-            SetPinValue(TriggerPinId, true);
+            SetPinValue(TriggerPin, true);
             Sleep(0.0001m);
-            SetPinValue(TriggerPinId, false);
+            SetPinValue(TriggerPin, false);
         }
 
         public void WaitForEcho(bool value, int timeoutInUs)
         {
             var count = timeoutInUs;
-            while (ReadPinValue(EchoPinId) != value && count > 0)
+            while (ReadPinValue(EchoPin) != value && count > 0)
             {
                 count -= 1;
             }
@@ -221,31 +236,18 @@
             return pin;
         }
 
-        private void SetPinValue(int pinId, int initialValue)
+        private void SetPinValue(GpioPin pin, int value)
         {
-            var pin = GpioController.Instance.GetGpioPinByBcmPinNumber(pinId);
-            if (pin.PinMode != GpioPinDriveMode.Output)
-            {
-                throw new Exception("Pin must me initialized as a PWM Output pin.");
-            }
-
-            pin.SoftPwmValue = initialValue;
+            pin.SoftPwmValue = value;
         }
 
-        private void SetPinValue(int pinId, bool state)
+        private void SetPinValue(GpioPin pin, bool state)
         {
-            var pin = GpioController.Instance.GetGpioPinByBcmPinNumber(pinId);
-            if (pin.PinMode != GpioPinDriveMode.Output)
-            {
-                throw new Exception("Pin must me initialized as a Output pin.");
-            }
-
             pin.Write(state);
         }
 
-        private bool ReadPinValue(int pinId)
-        {
-            var pin = GpioController.Instance.GetGpioPinByBcmPinNumber(pinId);
+        private bool ReadPinValue(GpioPin pin)
+        {            
             return pin.Read();
         }
 
