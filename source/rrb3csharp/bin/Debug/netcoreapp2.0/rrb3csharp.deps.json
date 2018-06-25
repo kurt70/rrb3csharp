@@ -1,17 +1,18 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.0",
-    "signature": "210ad1e9dffb44e077582abcaeb43ba950fc0c94"
+    "signature": "87d21ac6fc4186c9b9ff90a97b554d4ba514ba40"
   },
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v2.0": {
-      "rrb3csharp/1.0.0": {
+      "RRB3CSharp/1.0.0": {
         "dependencies": {
-          "Unosquare.Raspberry.IO": "0.14.0"
+          "Unosquare.Raspberry.IO": "0.14.0",
+          "Unosquare.RaspberryIO.Peripherals": "0.2.0"
         },
         "runtime": {
-          "rrb3csharp.dll": {}
+          "RRB3CSharp.dll": {}
         }
       },
       "Microsoft.NETCore.Targets/1.1.0": {},
@@ -164,6 +165,7 @@
           }
         }
       },
+      "StyleCop.Analyzers/1.0.2": {},
       "System.AppContext/4.3.0": {
         "dependencies": {
           "System.Runtime": "4.3.0"
@@ -930,6 +932,15 @@
           "lib/netstandard2.0/Unosquare.RaspberryIO.dll": {}
         }
       },
+      "Unosquare.RaspberryIO.Peripherals/0.2.0": {
+        "dependencies": {
+          "StyleCop.Analyzers": "1.0.2",
+          "Unosquare.Raspberry.IO": "0.14.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Unosquare.RaspberryIO.Peripherals.dll": {}
+        }
+      },
       "Unosquare.Swan/0.28.1": {
         "dependencies": {
           "System.AppContext": "4.3.0",
@@ -970,7 +981,7 @@
     }
   },
   "libraries": {
-    "rrb3csharp/1.0.0": {
+    "RRB3CSharp/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -1107,6 +1118,13 @@
       "sha512": "sha512-leXiwfiIkW7Gmn7cgnNcdtNAU70SjmKW3jxGj1iKHOvdn0zRWsgv/l2OJUO5zdGdiv2VRFnAsxxhDgMzofPdWg==",
       "path": "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl/4.3.2",
       "hashPath": "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.2.nupkg.sha512"
+    },
+    "StyleCop.Analyzers/1.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3xD87lafnVhsSEtJKk50G7FGutvaXkFz4XrrLrxnk/DhZU42dnCGWUsvKuBv4mTS0XdIgTY88tLhxW/8Vi3Pow==",
+      "path": "stylecop.analyzers/1.0.2",
+      "hashPath": "stylecop.analyzers.1.0.2.nupkg.sha512"
     },
     "System.AppContext/4.3.0": {
       "type": "package",
@@ -1527,6 +1545,13 @@
       "sha512": "sha512-qBCE5CH7z/03Bkw5NGsxLk57kWvSX9dU1EaYx8oO5kVz+nagjxbtrlhmxRFg38bWjSuAfsoUML0YDZ2jpr+jMg==",
       "path": "unosquare.raspberry.io/0.14.0",
       "hashPath": "unosquare.raspberry.io.0.14.0.nupkg.sha512"
+    },
+    "Unosquare.RaspberryIO.Peripherals/0.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-C+LzZxNYdJh/s441Cet9i/FA4KeV7jfyvJhi5gS9eOsdGDin1ht/9aGXWhHAsrEwtChpwMLXITLMcpQVhGYZhg==",
+      "path": "unosquare.raspberryio.peripherals/0.2.0",
+      "hashPath": "unosquare.raspberryio.peripherals.0.2.0.nupkg.sha512"
     },
     "Unosquare.Swan/0.28.1": {
       "type": "package",

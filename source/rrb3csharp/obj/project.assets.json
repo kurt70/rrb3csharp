@@ -5463,9 +5463,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Work\\rrb3csharp\\source\\rrb3csharp\\rrb3csharp.csproj",
-      "projectName": "rrb3csharp",
-      "projectPath": "C:\\Work\\rrb3csharp\\source\\rrb3csharp\\rrb3csharp.csproj",
+      "projectUniqueName": "C:\\Work\\rrb3csharp\\source\\rrb3csharp\\RRB3CSharp.csproj",
+      "projectName": "RRB3CSharp",
+      "projectPath": "C:\\Work\\rrb3csharp\\source\\rrb3csharp\\RRB3CSharp.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
       "outputPath": "C:\\Work\\rrb3csharp\\source\\rrb3csharp\\obj\\",
       "projectStyle": "PackageReference",
