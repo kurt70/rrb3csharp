@@ -1,9 +1,0 @@
-C:\Work\rrb3csharp\source\rrb3csharp\bin\Debug\netcoreapp2.0\rrb3csharp.deps.json
-C:\Work\rrb3csharp\source\rrb3csharp\bin\Debug\netcoreapp2.0\rrb3csharp.dll
-C:\Work\rrb3csharp\source\rrb3csharp\obj\Debug\netcoreapp2.0\rrb3csharp.csprojResolveAssemblyReference.cache
-C:\Work\rrb3csharp\source\rrb3csharp\obj\Debug\netcoreapp2.0\rrb3csharp.csproj.CoreCompileInputs.cache
-C:\Work\rrb3csharp\source\rrb3csharp\obj\Debug\netcoreapp2.0\rrb3csharp.AssemblyInfoInputs.cache
-C:\Work\rrb3csharp\source\rrb3csharp\obj\Debug\netcoreapp2.0\rrb3csharp.AssemblyInfo.cs
-C:\Work\rrb3csharp\source\rrb3csharp\bin\Debug\netcoreapp2.0\rrb3csharp.pdb
-C:\Work\rrb3csharp\source\rrb3csharp\obj\Debug\netcoreapp2.0\rrb3csharp.dll
-C:\Work\rrb3csharp\source\rrb3csharp\obj\Debug\netcoreapp2.0\rrb3csharp.pdb
