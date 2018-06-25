@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
+using Unosquare.RaspberryIO;
 using Unosquare.RaspberryIO.Gpio;
 
 namespace rrb3csharp
 {
     public class Rrb3
     {
-        public decimal MOTOR_DELAY = 0.2m;
+        public int MOTOR_DELAY = 200;//ms
         public int RIGHT_PWM_PIN = 14;
         public int RIGHT_1_PIN = 10;
         public int RIGHT_2_PIN = 25;
@@ -43,40 +46,18 @@ namespace rrb3csharp
                 Console.WriteLine("WARNING: Motor voltage is higher than battery vatage. Motor may run slow.");
             }
 
-            //    GPIO.setmode(GPIO.BCM)
-            //    GPIO.setwarnings(False)
-            //    GPIO.setup(self.LEFT_PWM_PIN, GPIO.OUT)
-            //    left_pwm = GPIO.PWM(self.LEFT_PWM_PIN, 500)
-            //    self.left_pwm.start(0)
-
-            left_pwm = InitPwmOutputPin( LEFT_PWM_PIN, 500);
+            left_pwm = InitPwmOutputPin(LEFT_PWM_PIN, 500);
             left_pwm.StartSoftPwm(500, 1000);
-            
-            //    GPIO.setup(self.LEFT_1_PIN, GPIO.OUT)
-            //    GPIO.setup(self.LEFT_2_PIN, GPIO.OUT)
-
-            //    GPIO.setup(self.RIGHT_PWM_PIN, GPIO.OUT)
-            //    self.right_pwm = GPIO.PWM(self.RIGHT_PWM_PIN, 500)
-            //    self.right_pwm.start(0)
 
             right_pwm = InitPwmOutputPin(RIGHT_PWM_PIN, 500);
 
-            //    GPIO.setup(self.RIGHT_1_PIN, GPIO.OUT)
-            //    GPIO.setup(self.RIGHT_2_PIN, GPIO.OUT)
             InitPin(RIGHT_1_PIN, GpioPinDriveMode.Output);
             InitPin(RIGHT_2_PIN, GpioPinDriveMode.Output);
-
-            //    GPIO.setup(self.LED1_PIN, GPIO.OUT)
-            //    GPIO.setup(self.LED2_PIN, GPIO.OUT)
+            
             InitPin(LED1_PIN, GpioPinDriveMode.Output);
             InitPin(LED2_PIN, GpioPinDriveMode.Output);
 
-            //    GPIO.setup(self.OC1_PIN, GPIO.OUT)
-            //    if revision == 1:
-            //        self.OC2_PIN = self.OC2_PIN_R1
-            //    else:
-            //        self.OC2_PIN = self.OC2_PIN_R2
-            // GPIO.setup(self.OC2_PIN_R2, GPIO.OUT)
+            InitPin(OC1_PIN, GpioPinDriveMode.Output);
 
             if (revision == 1)
             {
@@ -89,130 +70,166 @@ namespace rrb3csharp
 
             InitPin(OC2_PIN_R2, GpioPinDriveMode.Output);
 
-            //    GPIO.setup(self.SW1_PIN, GPIO.IN)
-            //    GPIO.setup(self.SW2_PIN, GPIO.IN)
-            //    GPIO.setup(self.TRIGGER_PIN, GPIO.OUT)
-            //    GPIO.setup(self.ECHO_PIN, GPIO.IN)
-
             InitPin(SW1_PIN, GpioPinDriveMode.Input);
             InitPin(SW2_PIN, GpioPinDriveMode.Input);
             InitPin(TRIGGER_PIN, GpioPinDriveMode.Input);
             InitPin(ECHO_PIN, GpioPinDriveMode.Input);
         }
+        public void set_motors(decimal left_pwm, int left_dir, decimal right_pwm, int right_dir)
+        {
+            if (old_left_dir != left_dir || old_right_dir != right_dir)
+            {
+                set_driver_pins(0, 0, 0, 0);
+                # stop motors between sudden changes of direction
+                Sleep(MOTOR_DELAY);
+            }
 
-            //    def set_motors(self, left_pwm, left_dir, right_pwm, right_dir):
-            //    if self.old_left_dir != left_dir or self.old_right_dir != right_dir:
-            //        self.set_driver_pins(0, 0, 0, 0)    # stop motors between sudden changes of direction
-            //        time.sleep(self.MOTOR_DELAY)
-            //    self.set_driver_pins(left_pwm, left_dir, right_pwm, right_dir)
-            //    self.old_left_dir = left_dir
-            //    self.old_right_dir = right_dir
+            set_driver_pins(left_pwm, left_dir, right_pwm, right_dir);
+            old_left_dir = left_dir;
+            old_right_dir = right_dir;
 
-            //def set_driver_pins(self, left_pwm, left_dir, right_pwm, right_dir):
-            //    self.left_pwm.ChangeDutyCycle(left_pwm* 100 * self.pwm_scale)
-            //    GPIO.output(self.LEFT_1_PIN, left_dir)
-            //    GPIO.output(self.LEFT_2_PIN, not left_dir)
-            //    self.right_pwm.ChangeDutyCycle(right_pwm* 100 * self.pwm_scale)
-            //    GPIO.output(self.RIGHT_1_PIN, right_dir)
-            //    GPIO.output(self.RIGHT_2_PIN, not right_dir)
+        }
 
-            //def forward(self, seconds= 0, speed= 1.0):
-            //    self.set_motors(speed, 0, speed, 0)
-            //    if seconds > 0:
-            //        time.sleep(seconds)
-            //        self.stop()
+        public void set_driver_pins(decimal left_pwm, int left_dir, decimal right_pwm, int right_dir)
+        {
 
-            //def stop(self):
-            //    self.set_motors(0, 0, 0, 0)
+            //left_pwm.ChangeDutyCycle(left_pwm* 100 * pwm_scale)
+            SetPinValue(LEFT_1_PIN, left_dir);
+            SetPinValue(LEFT_2_PIN, not left_dir);
+            //right_pwm.ChangeDutyCycle(right_pwm * 100 * pwm_scale);
+            SetPinValue(RIGHT_1_PIN, right_dir);
+            SetPinValue(RIGHT_2_PIN, right_dir);
+        }
 
-            //def reverse(self, seconds= 0, speed= 1.0):
-            //    self.set_motors(speed, 1, speed, 1)
-            //    if seconds > 0:
-            //        time.sleep(seconds)
-            //        self.stop()
+        public void forward(int seconds = 0, decimal speed = 1.0m)
+        {
+            set_motors(speed, 0, speed, 0);
+            if (seconds > 0)
+            {
+                Sleep(seconds * 1000);
+                Stop();
+            }
+        }
 
-            //def left(self, seconds= 0, speed= 0.5):
-            //    self.set_motors(speed, 0, speed, 1)
-            //    if seconds > 0:
-            //        time.sleep(seconds)
-            //        self.stop()
+        public void Stop()
+        {
+            set_motors(0, 0, 0, 0);
+        }
 
-            //def right(self, seconds= 0, speed= 0.5):
-            //    self.set_motors(speed, 1, speed, 0)
-            //    if seconds > 0:
-            //        time.sleep(seconds)
-            //        self.stop()
+        public void Reverse(int seconds = 0, decimal speed = 1.0m)
+        {
+            set_motors(speed, 1, speed, 1);
+            if (seconds > 0)
+            {
+                Sleep(seconds);
+                Stop();
+            }
+        }
 
-            //def step_forward(self, delay, num_steps):
-            //    for i in range(0, num_steps) :
-            //        self.set_driver_pins(1, 1, 1, 0)
-            //        time.sleep(delay)
-            //        self.set_driver_pins(1, 1, 1, 1)
-            //        time.sleep(delay)
-            //        self.set_driver_pins(1, 0, 1, 1)
-            //        time.sleep(delay)
-            //        self.set_driver_pins(1, 0, 1, 0)
-            //        time.sleep(delay)
-            //    self.set_driver_pins(0, 0, 0, 0)
+        public void Left(int seconds = 0, decimal speed = 0.5m)
+        {
+            set_motors(speed, 0, speed, 1);
+            if (seconds > 0)
+            {
+                Sleep(seconds);
+                Stop();
+            }
+        }
 
-            //def step_reverse(self, delay, num_steps):
-            //    for i in range(0, num_steps) :
-            //        self.set_driver_pins(1, 0, 1, 0)
-            //        time.sleep(delay)
-            //        self.set_driver_pins(1, 0, 1, 1)
-            //        time.sleep(delay)
-            //        self.set_driver_pins(1, 1, 1, 1)
-            //        time.sleep(delay)
-            //        self.set_driver_pins(1, 1, 1, 0)
-            //        time.sleep(delay)
-            //    self.set_driver_pins(0, 0, 0, 0)
+        public void Right(int seconds = 0, decimal speed = 0.5m)
+        {
+            set_motors(speed, 1, speed, 0);
+            if (seconds > 0)
+            {
+                Sleep(seconds);
+                Stop();
+            }
+        }
 
-            //def sw1_closed(self):
-            //    return not GPIO.input(self.SW1_PIN)
+        public void StepForward(int delay, int num_steps)
+        {
+            for (int i = 0; i < num_steps; i++)
+            {
+                set_driver_pins(1, 1, 1, 0);
+                Sleep(delay);
+                set_driver_pins(1, 1, 1, 1);
+                Sleep(delay);
+                set_driver_pins(1, 0, 1, 1);
+                Sleep(delay);
+                set_driver_pins(1, 0, 1, 0);
+                Sleep(delay);}
 
-            //def sw2_closed(self):
-            //    return not GPIO.input(self.SW2_PIN)
+            set_driver_pins(0, 0, 0, 0);
+        }
 
-            //def set_led1(self, state):
-            //    GPIO.output(self.LED1_PIN, state)
+        //def step_reverse(self, delay, num_steps):
+        //    for i in range(0, num_steps) :
+        //        self.set_driver_pins(1, 0, 1, 0)
+        //        time.sleep(delay)
+        //        self.set_driver_pins(1, 0, 1, 1)
+        //        time.sleep(delay)
+        //        self.set_driver_pins(1, 1, 1, 1)
+        //        time.sleep(delay)
+        //        self.set_driver_pins(1, 1, 1, 0)
+        //        time.sleep(delay)
+        //    self.set_driver_pins(0, 0, 0, 0)
 
-            //def set_led2(self, state) :
-            //    GPIO.output(self.LED2_PIN, state)
+        //def sw1_closed(self):
+        //    return not GPIO.input(self.SW1_PIN)
 
-            //def set_oc1(self, state) :
-            //    GPIO.output(self.OC1_PIN, state)
+        //def sw2_closed(self):
+        //    return not GPIO.input(self.SW2_PIN)
 
-            //def set_oc2(self, state) :
-            //    GPIO.output(self.OC2_PIN, state)
+        //def set_led1(self, state):
+        //    GPIO.output(self.LED1_PIN, state)
 
-            //def _send_trigger_pulse(self) :
-            //    GPIO.output(self.TRIGGER_PIN, True)
-            //    time.sleep(0.0001)
-            //    GPIO.output(self.TRIGGER_PIN, False)
+        //def set_led2(self, state) :
+        //    GPIO.output(self.LED2_PIN, state)
 
-            //def _wait_for_echo(self, value, timeout) :
-            //    count = timeout
-            //    while GPIO.input(self.ECHO_PIN) != value and count > 0:
-            //        count -= 1
+        //def set_oc1(self, state) :
+        //    GPIO.output(self.OC1_PIN, state)
 
-            //def get_distance(self):
-            //    self._send_trigger_pulse()
-            //    self._wait_for_echo(True, 10000)
-            //    start = time.time()
-            //    self._wait_for_echo(False, 10000)
-            //    finish = time.time()
-            //    pulse_len = finish - start
-            //    distance_cm = pulse_len / 0.000058
-            //    return distance_cm
+        //def set_oc2(self, state) :
+        //    GPIO.output(self.OC2_PIN, state)
 
-            //def cleanup(self) :
-            //    GPIO.cleanup()
-        
+        public void Send_trigger_pulse()
+        {
+            SetPinValue(TRIGGER_PIN, true);
+            Sleep(0.0001m);
+            SetPinValue(TRIGGER_PIN, false);
+        }
+
+        public void Wait_for_echo(bool value, int timeoutInUs)
+        {
+            var count = timeoutInUs;
+            while (ReadPinValue(ECHO_PIN) != value && count > 0)
+            {
+                count -= 1;
+            }
+        }
+
+        public double Get_distance()
+        {
+            Send_trigger_pulse();
+            Wait_for_echo(true, 10000);
+            var start = DateTime.UtcNow;
+            Wait_for_echo(false, 10000);
+            var finish = DateTime.UtcNow;
+            var pulse_len = (finish - start).TotalMilliseconds;
+            var distance_cm = pulse_len / 0.000058;
+            return distance_cm;
+        }
+
+        public void cleanup()
+        {
+
+        }//    GPIO.cleanup()
+
 
         private GpioPin InitPin(int pinId, GpioPinDriveMode mode)
         {
 
-            var pin = GpioController.Instance.GetGpioPinByBcmPinNumber(pinId);
+            var pin = Pi.Gpio.GetGpioPinByBcmPinNumber(pinId);
             pin.PinMode = mode;
 
             return pin;
@@ -222,9 +239,47 @@ namespace rrb3csharp
         {
             var pin = GpioController.Instance.GetGpioPinByBcmPinNumber(pinId);
             pin.PinMode = GpioPinDriveMode.PwmOutput;
+            if (!pin.IsInSoftPwmMode)
+            {
+                pin.StartSoftPwm(pinId, initialValue);
+            }
             pin.SoftPwmValue = initialValue;
 
             return pin;
+        }
+
+        private void SetPinValue(int pinId, int initialValue)
+        {
+            var pin = GpioController.Instance.GetGpioPinByBcmPinNumber(pinId);
+            if (pin.PinMode != GpioPinDriveMode.PwmOutput)
+            {
+                throw new Exception("Pin must me initialized as a PWM Output pin.");
+            }
+
+            pin.SoftPwmValue = initialValue;
+        }
+
+        private void SetPinValue(int pinId, bool state)
+        {
+            var pin = GpioController.Instance.GetGpioPinByBcmPinNumber(pinId);
+            if (pin.PinMode != GpioPinDriveMode.Output)
+            {
+                throw new Exception("Pin must me initialized as a Output pin.");
+            }
+
+            pin.Write(state);
+        }
+
+        private bool ReadPinValue(int pinId)
+        {
+            var pin = GpioController.Instance.GetGpioPinByBcmPinNumber(pinId);
+            return pin.Read();
+        }
+
+        private static void Sleep(decimal seconds)
+        {
+            uint us = Convert.ToUInt16(seconds * 1000000);
+            Pi.Timing.SleepMicroseconds(us);
         }
     }
 }

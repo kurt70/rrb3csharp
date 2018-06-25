@@ -5456,17 +5456,20 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Admin\\.nuget\\packages\\": {},
+    "C:\\Users\\u40481\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
+    "restoreSettings": {
+      "hideWarningsAndErrors": true
+    },
     "restore": {
       "projectUniqueName": "C:\\Work\\rrb3csharp\\source\\rrb3csharp\\rrb3csharp.csproj",
       "projectName": "rrb3csharp",
       "projectPath": "C:\\Work\\rrb3csharp\\source\\rrb3csharp\\rrb3csharp.csproj",
-      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\u40481\\.nuget\\packages\\",
       "outputPath": "C:\\Work\\rrb3csharp\\source\\rrb3csharp\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
@@ -5474,7 +5477,7 @@
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\u40481\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.Fallback.config"
       ],
@@ -5483,7 +5486,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Work\\PrivateNuGet": {},
+        "\\\\teamcity.energycorp.com\\NuGetFeeds": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
